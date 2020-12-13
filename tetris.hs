@@ -133,8 +133,7 @@ initFormat L = ([(5,1),(3,2),(4,2),(5,2)], West, L)
 initFormat Z = ([(3,1),(4,1),(4,2),(5,2)], West, Z)
 initFormat C = ([(3,1),(3,2),(4,2),(5,2)], East, C)
 
---If piece can rotate ------------------------------------------------------------------------------------------------------
---([Coord], Dir, Format)
+--Rotate Piece NEEDS TESTING------------------------------------------------------------------------------------------------------
 rotatePiece :: Piece -> Piece 
 rotatePiece (c,d,O) = (c,d,O)
 
@@ -153,7 +152,6 @@ rotatePiece ([(x1,y1),(x2,y2),(x3,y3),(x4,y4)], dir, W) | dir == North =  ([(x1,
                                                         | dir == South = ([(x2,y2-1),(x1,y1),(x2,y2),(x4,y4)], West,W)
                                                         | dir == West = ([(x1,y1),(x2,y2),(x3,y3),(x4+1,y4-1)], North,W) 
 
-
 rotatePiece ([(x1,y1),(x2,y2),(x3,y3),(x4,y4)], dir, L) | dir == West =  ([(x1-1,y1-1),(x2+1,y2-1),(x3,y3),(x4,y4)], North,L)
                                                         | dir == North = ([(x1-1,y1+1),(x2,y2),(x3-1,y3+1),(x4-2,y4)], East,L)
                                                         | dir == East = ([(x1+1,y1-1),(x2+1,y2-1),(x3,y3),(x4+2,y4)], South,L)
@@ -169,6 +167,13 @@ rotatePiece ([(x1,y1),(x2,y2),(x3,y3),(x4,y4)], dir, C) | dir == East =  ([(x1,y
                                                         | dir == West = ([(x3,y3-1),(x3,y3),(x4,y4),(x4-1,y4)], North,C)
                                                         | dir == North = ([(x1-1,y1+1),(x4,y4),(x3,y3),(x3+1,y3)], East,C)
 
+--If piece can rotate NEEDS TESTING------------------------------------------------------------------------------------------------------
+--gets Coords from Piece
+firstP :: Piece -> [Coord]
+firstP (coords,dir,format) = coords
+
+canRotate :: Game -> Bool
+canRotate (b,s,p,np) = all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  $ firstP (rotatePiece p)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 posBoard :: Board -> Int -> [[(Int,Int)]] -> [[(Int,Int)]]
