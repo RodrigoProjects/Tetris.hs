@@ -1,6 +1,13 @@
 module Tetris where
 
 import System.Random
+{-TO DO:
+-canRotate missing if normal DONE
+-movePiece DONE
+-canMove DONE
+-move
+-rotate
+-}
 
 --                       Current  Next
 type Game = (Board,Score, Piece, Piece)
@@ -94,27 +101,26 @@ getBlockAux :: [Block] -> Int -> Maybe Block
 getBlockAux (h:t) 0 = Just h 
 getBlockAux (h:t) x = getBlockAux t (x-1)
 
---Movie Block to the right NEEDS TO BE TESTED-------------------------------------------------------------------------------
-moveRight :: Board -> (Int,Int) -> Board
-moveRight b@(h:t) (x,y) | getBlock b (x,y) == Nothing = b
-                        | fromJust (getBlock b (x,y)) /= Normal = b
-                        | fromJust (getBlock b (x+1,y)) /= Bg = b
-                        | otherwise = replace (replace b (x+1) y (fromJust (getBlock b (x,y)))) x y Bg 
+--Returns Moved Piece-
+movePiece :: Piece -> Dir -> Piece
+movePiece p@(coords,d,f) dir | dir == South = (map (\(x,y) -> (x,y + 1)) coords, d,f)
+                             | dir == West = (map (\(x,y) -> (x - 1,y)) coords, d,f)
+                             | dir == East = (map (\(x,y) -> (x + 1,y)) coords, d,f)
 
---Movie Block to the left NEEDS TO BE TESTED-------------------------------------------------------------------------------
-moveLeft :: Board -> (Int,Int) -> Board
-moveLeft b@(h:t) (x,y) | getBlock b (x,y) == Nothing = b
-                       | fromJust (getBlock b (x,y)) /= Normal = b
-                       | fromJust (getBlock b (x-1,y)) /= Bg = b
-                       | otherwise = replace (replace b (x-1) y (fromJust (getBlock b (x,y)))) x y Bg 
+--Returns If Piece can move   NEEDS TESTING
+canMove :: Game -> Dir -> Bool
+canMove (b,s,p@(coords,d,f),np) dir = (all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  $ firstP (movePiece p dir))
+            && (all (\x -> x == Just Normal)  $ map (\x -> getBlock b x)  coords )
 
---Move Block downwards----------------------------------------------------------------------------------
-moveDown :: Board -> (Int,Int) -> Board
-moveDown b@(h:t) (x,y) | getBlock b (x,y) == Nothing = b
-                       | fromJust (getBlock b (x,y)) /= Normal = b
-                       | fromJust (getBlock b (x,y+1)) /= Bg = b
-                       | otherwise = replace (replace b x (y+1) (fromJust (getBlock b (x,y)))) x y Bg 
-
+--Moves a Piece
+--type Game = (Board,Score, Piece, Piece)
+--replace returns board
+--replace (replace b x (y+1) (fromJust (getBlock b (x,y)))) x y Bg 
+move :: Game -> Dir -> Game
+move g@(b,s,p@(coords,d,f),np) dir | dir == South && canMove g dir = map (\(x,y) -> replace (replace b x (y+1) (fromJust (getBlock b (x,y)))) x y Bg ) coords
+--                                  | dir == North =
+--                                  | dir == West =
+--                                  | dir == East =  
 
 --Get Next Piece------------------------------------------------------------------------------------------------------
 getNextPiece :: IO Piece
@@ -173,8 +179,8 @@ firstP :: Piece -> [Coord]
 firstP (coords,dir,format) = coords
 
 canRotate :: Game -> Bool
-canRotate (b,s,p,np) = all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  $ firstP (rotatePiece p)
-
+canRotate (b,s,p@(coords,d,f),np) = (all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  $ firstP (rotatePiece p))
+            && (all (\x -> x == Just Normal)  $ map (\x -> getBlock b x)  coords )
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 posBoard :: Board -> Int -> [[(Int,Int)]] -> [[(Int,Int)]]
 posBoard _ 10 res = res
