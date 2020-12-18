@@ -19,15 +19,15 @@ type Score = Int
 
 type Coord = (Int,Int)
 
-type Piece = ([Coord], Dir, Format, Color)
+type Piece = ([Coord], Dir, Format, Colour)
 
 data Dir = North | South | West | East deriving (Show,Eq) 
 
 data Format = I | L | S | W | O | Z | C  deriving (Show,Eq)
 
-data Color = Black | Blue | DarkBlue | Green | Orange | Pink | Red | Yellow deriving (Show,Eq)
+data Colour = Black | Blue | DarkBlue | Green | Orange | Pink | Red | Yellow deriving (Show,Eq)
 
-data Block = Bg | Normal Color | Border deriving (Show,Eq) 
+data Block = Bg | Normal Colour | Border deriving (Show,Eq) 
 
 pieces :: [Format]
 pieces = [I,L,S,W,O,Z,C]
@@ -136,7 +136,7 @@ isMaybeNormal _ = False
 --replace returns board
 --replace (replace b x (y+1) (fromJust (getBlock b (x,y)))) x y Bg 
 --move :: Game -> Dir -> Game
---move g@(b,s,p@(coords,d,f),np) dir | dir == South && canMove g dir = map (\(x,y) -> replace (replace b x (y+1) (fromJust (getBlock b (x,y)))) x y Bg ) coords
+--move g@(b,s,p@(((x,y):t),d,f,c),np) dir | dir == South && canMove g dir = replace (replace b x (y+1) (fromJust (getBlock b (x,y))) x y Bg )   
 --                                  | dir == North =
 --                                  | dir == West =
 --                                  | dir == East =  
