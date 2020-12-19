@@ -45,7 +45,7 @@ testBoard = replicate 10 Border : (replicate 8 ( [Border] ++ replicate 8 (Normal
 
 --Initial Board
 initialBoard :: Board
-initialBoard = createBoard 20 10
+initialBoard = createBoard 22 12
 
 
 --Creates Board--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
