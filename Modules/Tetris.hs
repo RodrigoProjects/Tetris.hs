@@ -1,4 +1,4 @@
-module Modules.Tetris where
+module Tetris where
 
 import System.Random
 {-TO DO:
@@ -25,7 +25,7 @@ data Dir = North | South | West | East deriving (Show,Eq)
 
 data Format = I | L | S | W | O | Z | C  deriving (Show,Eq)
 
-data Colour = Black | Blue | DarkBlue | Green | Orange | Pink | Red | Yellow deriving (Show,Eq)
+data Colour = Blue | DarkBlue | Green | Orange | Pink | Red | Yellow deriving (Show,Eq)
 
 data Block = Bg | Normal Colour | Border deriving (Show,Eq) 
 
@@ -49,11 +49,11 @@ initGame = do
 
 -- Test board-------------------------------------------------------------------------------------
 testBoard :: Board
-testBoard = replicate 10 Border : (replicate 8 ( [Border] ++ replicate 8 (Normal Black) ++ [Border])) ++ [replicate 10 Border]
+testBoard = replicate 10 Border : (replicate 8 ( [Border] ++ replicate 8 (Normal Blue) ++ [Border])) ++ [replicate 10 Border]
 
 --Initial Board
 initialBoard :: Board
-initialBoard = createBoard 10 20 
+initialBoard = createBoard 20 10
 
 
 --Creates Board-----------------------------------------------------------------------------------
