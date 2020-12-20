@@ -94,6 +94,10 @@ replaceAux (h:t) 0 p = p:t
 replaceAux (h:t) x p = h : replaceAux t (x-1) p
 
 
+canReplace :: Game -> Bool
+canReplace (b,s,p@(coords,d,f,c),np) = all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  coords
+
+
 --Check if Line is full (Border [Normal...,Normal] Border)-------------------------------------------------------------------------------------------------------------------------------------
 checkFullLine :: [Block] -> Bool
 checkFullLine l = and $ (map isNormal ((init . tail) l))
@@ -172,9 +176,9 @@ rotatePiece ([(x1,y1),(x2,y2),(x3,y3),(x4,y4)], dir, W,Pink) | dir == North =  (
                                                         | dir == West = ([(x1,y1),(x2,y2),(x3,y3),(x4+1,y4-1)], North,W, Pink) 
 
 rotatePiece ([(x1,y1),(x2,y2),(x3,y3),(x4,y4)], dir, L,Yellow) | dir == West =  ([(x1-1,y1-1),(x2+1,y2-1),(x3,y3),(x4,y4)], North,L, Yellow)
-                                                        | dir == North = ([(x1-1,y1+1),(x2,y2),(x3-1,y3+1),(x4-2,y4)], East,L, Yellow)
+                                                        | dir == North = ([(x1-1,y1+1),(x2,y2),(x3+1,y3-1),(x4-2,y4)], East,L, Yellow)
                                                         | dir == East = ([(x1+1,y1-1),(x2+1,y2-1),(x3,y3),(x4+2,y4)], South,L, Yellow)
-                                                        | dir == South = ([(x3,y3),(x3-2,y3),(x3-1,y3),(x4,y4)], West, L, Yellow)
+                                                        | dir == South = ([(x3,y3),(x4-2,y4),(x4-1,y4),(x4,y4)], West, L, Yellow)
 
 rotatePiece ([(x1,y1),(x2,y2),(x3,y3),(x4,y4)], dir, Z, Red) | dir == West =  ([(x1+2,y1-1),(x2,y2),(x3+1,y3-1),(x3,y3)], North,Z, Red)
                                                         | dir == North = ([(x1-2,y1+1),(x2,y2),(x4,y4),(x4+1,y4)], East,Z, Red)

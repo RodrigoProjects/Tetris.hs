@@ -16,6 +16,7 @@ background = black
 -- Draw the Game --------------------------------------------------
 drawGame :: State -> IO Picture
 drawGame (0, (b, s, c, n), imgs) = return $ Translate (-400) (400) $ Pictures $ drawBoard b (0,0) imgs ++ drawCurrentPiece c imgs ++ drawScore s ++ drawNextPiece n imgs
+drawGame (1, (b, s, c, n), imgs) = return $ Pictures [Translate (-250) (200) $ Color white $ Scale 0.6 0.6 $ Text "Game Over", Translate (-80) (50) $ Color green $ Scale 0.5 0.5 $ Text $ show s] 
 drawGame _ = undefined
 
 drawNextPiece :: Piece -> Imgs -> [Picture]
@@ -71,14 +72,19 @@ timeToWorld _ ss@(s, g@(b, score, cur@(coords, dir, form, cor), nex), imgs)
         | canMove g South = return (s, (b, score, movePiece cur South, nex), imgs)
         | otherwise = do
                 nextPiece <- getNextPiece 
-                return (s, updateGame (replaceMult b coords (Normal cor), score, nex, nextPiece), imgs)
+                case canReplace (b, score, nex, nex) of
+                        True -> return (0, updateGame (replaceMult b coords (Normal cor), score, nex, nextPiece), imgs)
+                        _    -> return (1, g, imgs) 
 
 eventHandler :: Event -> State -> IO State
 eventHandler (EventKey (Char 's') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
         | canMove g South = return (0, (b, score + 1, movePiece cur South, nex), imgs)
         | otherwise = do
                 nextPiece <- getNextPiece 
-                return (0, updateGame (replaceMult b coords (Normal cor), score, nex, nextPiece), imgs)
+                case canReplace (b, score, nex, nex) of
+                        True -> return (0, updateGame (replaceMult b coords (Normal cor), score, nex, nextPiece), imgs)
+                        _    -> return (1, g, imgs) 
+                
 eventHandler (EventKey (Char 'a') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
         | canMove g West = return (0, (b, score, movePiece cur West , nex), imgs)
         | otherwise = return ss
@@ -86,7 +92,7 @@ eventHandler (EventKey (Char 'd') Down _ _) ss@(0, g@(b, score, cur@(coords, dir
         | canMove g East  = return (0, (b, score, movePiece cur East , nex), imgs)
         | otherwise = return ss
 eventHandler (EventKey (Char 'r') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
-        | canMove g West = return (0, Tetris.rotate g, imgs)
+        | canRotate g = return (0, Tetris.rotate g, imgs)
         | otherwise = return ss
 eventHandler _ s = return s
 
