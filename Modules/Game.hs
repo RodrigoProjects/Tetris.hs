@@ -1,6 +1,7 @@
 module Game where
 
 import Graphics.Gloss
+import Graphics.Gloss.Interface.IO.Game
 import Tetris as Tetris 
 
 type Imgs = (Picture, Picture, Picture, Picture, Picture, Picture, Picture, Picture, Picture)
@@ -13,8 +14,8 @@ background :: Color
 background = black
 
 -- Draw the Game --------------------------------------------------
-drawGame :: State -> Picture
-drawGame (0, (b, s, c, n), imgs) =  Translate (-400) (400) $ Pictures $ drawBoard b (0,0) imgs ++ drawCurrentPiece c imgs ++ drawScore s ++ drawNextPiece n imgs
+drawGame :: State -> IO Picture
+drawGame (0, (b, s, c, n), imgs) = return $ Translate (-400) (400) $ Pictures $ drawBoard b (0,0) imgs ++ drawCurrentPiece c imgs ++ drawScore s ++ drawNextPiece n imgs
 drawGame _ = undefined
 
 drawNextPiece :: Piece -> Imgs -> [Picture]
@@ -65,10 +66,29 @@ colorToPicture c (border, bg, yellow, red, pink, orange, green, darkBlue, blue)
              Red -> red
              Yellow -> yellow 
 
-timeToWorld :: Float -> State -> State 
-timeToWorld _ ss@(s, g@(b, score, cur, nex), imgs) 
-        | canMove g South = (s, (b, score, movePiece cur South, nex), imgs)
-        | otherwise =  ss
+timeToWorld :: Float -> State -> IO State 
+timeToWorld _ ss@(s, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
+        | canMove g South = return (s, (b, score, movePiece cur South, nex), imgs)
+        | otherwise = do
+                nextPiece <- getNextPiece 
+                return (s, updateGame (replaceMult b coords (Normal cor), score, nex, nextPiece), imgs)
+
+eventHandler :: Event -> State -> IO State
+eventHandler (EventKey (Char 's') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
+        | canMove g South = return (0, (b, score + 1, movePiece cur South, nex), imgs)
+        | otherwise = do
+                nextPiece <- getNextPiece 
+                return (0, updateGame (replaceMult b coords (Normal cor), score, nex, nextPiece), imgs)
+eventHandler (EventKey (Char 'a') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
+        | canMove g West = return (0, (b, score, movePiece cur West , nex), imgs)
+        | otherwise = return ss
+eventHandler (EventKey (Char 'd') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
+        | canMove g East  = return (0, (b, score, movePiece cur East , nex), imgs)
+        | otherwise = return ss
+eventHandler (EventKey (Char 'r') Down _ _) ss@(0, g@(b, score, cur@(coords, dir, form, cor), nex), imgs) 
+        | canMove g West = return (0, Tetris.rotate g, imgs)
+        | otherwise = return ss
+eventHandler _ s = return s
 
 main :: IO ()
 main = do
@@ -82,11 +102,11 @@ main = do
         green <- loadBMP "assets/green.bmp"
         darkBlue <- loadBMP "assets/darkBlue.bmp"
         blue <- loadBMP "assets/blue.bmp"
-        play
+        playIO
           window
           black
           1
           (0,game, (Scale 0.4 0.4 border, Scale 0.4 0.4 bg, Scale 0.4 0.4 yellow, Scale 0.4 0.4 red, Scale 0.4 0.4 pink, Scale 0.4 0.4 orange, Scale 0.4 0.4 green, Scale 0.4 0.4 darkBlue, Scale 0.4 0.4 blue))
           drawGame
-          (\ _ w -> w)
+          eventHandler
           timeToWorld

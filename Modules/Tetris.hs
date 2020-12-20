@@ -77,6 +77,7 @@ removeFullLines b =  head b : replicate fullLines ([Border] ++ replicate ( flip 
 
 --Replace Multiple Blocks without logic--------------------------------------------------------------------------------------------------------------------------------------------------------
 replaceMult :: Board -> [(Int, Int)] -> Block -> Board
+replaceMult b [] _ = b 
 replaceMult b (h:t) bl = replaceMult (replace b h bl) t bl
 
 
