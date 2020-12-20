@@ -80,8 +80,8 @@ main = do
         play
           window
           black
-          20
+          1
           (0,game, (Scale 0.4 0.4 border, Scale 0.4 0.4 bg, Scale 0.4 0.4 yellow, Scale 0.4 0.4 red, Scale 0.4 0.4 pink, Scale 0.4 0.4 orange, Scale 0.4 0.4 green, Scale 0.4 0.4 darkBlue, Scale 0.4 0.4 blue))
           drawGame
           (\ _ w -> w)
-          (\ f w -> w)
+          (\ f (s, (b, score, cur, nex), imgs) -> (s, (b,score, movePiece cur South, nex), imgs))
