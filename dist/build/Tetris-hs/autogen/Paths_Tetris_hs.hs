@@ -29,12 +29,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/home/rodrigo/.cabal/bin"
-libdir     = "/home/rodrigo/.cabal/lib/x86_64-linux-ghc-8.6.5/Tetris-hs-0.1.0.0-1JbhBI2FynM27qSGJmDMkK-Tetris-hs"
-dynlibdir  = "/home/rodrigo/.cabal/lib/x86_64-linux-ghc-8.6.5"
-datadir    = "/home/rodrigo/.cabal/share/x86_64-linux-ghc-8.6.5/Tetris-hs-0.1.0.0"
-libexecdir = "/home/rodrigo/.cabal/libexec/x86_64-linux-ghc-8.6.5/Tetris-hs-0.1.0.0"
-sysconfdir = "/home/rodrigo/.cabal/etc"
+bindir     = "/home/angelica/.cabal/bin"
+libdir     = "/home/angelica/.cabal/lib/x86_64-linux-ghc-8.6.5/Tetris-hs-0.1.0.0-1JbhBI2FynM27qSGJmDMkK"
+dynlibdir  = "/home/angelica/.cabal/lib/x86_64-linux-ghc-8.6.5"
+datadir    = "/home/angelica/.cabal/share/x86_64-linux-ghc-8.6.5/Tetris-hs-0.1.0.0"
+libexecdir = "/home/angelica/.cabal/libexec/x86_64-linux-ghc-8.6.5/Tetris-hs-0.1.0.0"
+sysconfdir = "/home/angelica/.cabal/etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "Tetris_hs_bindir") (\_ -> return bindir)

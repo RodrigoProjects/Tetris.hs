@@ -76,8 +76,8 @@ removeFullLines b =  head b : replicate fullLines ([Border] ++ replicate ( flip 
                               
 
 --Replace Multiple Blocks without logic--------------------------------------------------------------------------------------------------------------------------------------------------------
-replaceMult :: Board -> [(Int, Int)] -> [Block] -> Board
-replaceMult b (h:t) (bl:bls) = replaceMult (replace b h bl) t bls
+replaceMult :: Board -> [(Int, Int)] -> Block -> Board
+replaceMult b (h:t) bl = replaceMult (replace b h bl) t bl
 
 
 --Replace Block in Board-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ movePiece p@(coords,d,f,c) dir | dir == South = (map (\(x,y) -> (x,y + 1)) coord
 --Returns If Piece can move   NEEDS TESTING
 canMove :: Game -> Dir -> Bool
 canMove (b,s,p@(coords,d,f,c),np) dir = (all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  $ firstP (movePiece p dir))
-            && (all isMaybeNormal  $ map (\x -> getBlock b x)  coords )
+
 
 isMaybeNormal :: Maybe Block -> Bool
 isMaybeNormal (Just (Normal _)) = True
@@ -143,13 +143,13 @@ getNextPiece = do
 
 --Initial format coords------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 initFormat :: Format -> Piece
-initFormat I = ([(3,1),(4,1),(5,1),(6,1)], West, I, Orange)
-initFormat O = ([(4,1),(5,1),(4,2),(5,2)], South, O, Blue)
-initFormat S = ([(4,1),(5,1),(3,2),(4,2)], East, S, Green)
-initFormat W = ([(4,1),(3,2),(4,2),(5,2)], North, W, Pink)
-initFormat L = ([(5,1),(3,2),(4,2),(5,2)], West, L, Yellow)
-initFormat Z = ([(3,1),(4,1),(4,2),(5,2)], West, Z, Red)
-initFormat C = ([(3,1),(3,2),(4,2),(5,2)], East, C, DarkBlue)
+initFormat I = ([(4,1),(5,1),(6,1),(7,1)], West, I, Orange)
+initFormat O = ([(5,1),(6,1),(5,2),(6,2)], South, O, Blue)
+initFormat S = ([(5,1),(6,1),(4,2),(5,2)], East, S, Green)
+initFormat W = ([(5,1),(4,2),(5,2),(6,2)], North, W, Pink)
+initFormat L = ([(6,1),(4,2),(5,2),(6,2)], West, L, Yellow)
+initFormat Z = ([(4,1),(5,1),(5,2),(6,2)], West, Z, Red)
+initFormat C = ([(4,1),(4,2),(5,2),(6,2)], East, C, DarkBlue)
 
 --Rotate Piece NEEDS TESTING-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 rotatePiece :: Piece -> Piece 
@@ -192,7 +192,6 @@ firstP (coords,dir,format,c) = coords
 
 canRotate :: Game -> Bool
 canRotate (b,s,p@(coords,d,f,c),np) = (all (\x -> x == Just Bg)  $ map (\x -> getBlock b x)  $ firstP (rotatePiece p))
-            && (all (isMaybeNormal)  $ map (\x -> getBlock b x)  coords )
 
 --Rotates Current Piece------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 rotate :: Game -> Game
